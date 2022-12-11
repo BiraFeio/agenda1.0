@@ -3,10 +3,11 @@ from django.http import HttpResponse
 from django.template import loader
 from .models import Pessoa
 
-lista = Pessoa.objects.all().values()
+
 
 # Create your views here.
 def index(request):
+    lista = Pessoa.objects.all().values()
     contexto = {
         'pessoas':lista,
     }
@@ -29,4 +30,25 @@ def registrar(request):
 def delete(request,id):
     pessoa = Pessoa.objects.get(id=id)
     pessoa.delete()
-    redirect('index')
+    return redirect('index')
+
+def atualiza(request,id):
+    pessoa = Pessoa.objects.get(id=id)
+    contexto = {
+        'pessoa':pessoa,
+    }
+    return render(request,'atualiza.html',contexto)
+
+def atualizado(request,id):
+    if request.method == 'POST':
+        pessoa = Pessoa.objects.get(id=id)
+        fnome = request.POST['nome']
+        pessoa.nome= fnome
+        fsobrenome= request.POST['sobrenome']
+        pessoa.sobrenome= fsobrenome
+        ffone=request.POST['fone']
+        pessoa.fone= ffone
+        pessoa.save()
+        return redirect('index')
+    else:
+        return render(request,'index.html')
